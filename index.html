@@ -1,0 +1,731 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Popking — Gourmet Popcorn, Since 1996</title>
+<meta name="description" content="Popking. Gourmet popcorn crafted since 1996. Eighteen flavours across three collections.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0A0A0B; --bg-2:#111113; --ink:#F2EFE9; --mute:#8C8981; --line:rgba(242,239,233,.12);
+  --accent:#E0832B; --serif:'Instrument Serif', Georgia, serif; --sans:'Inter Tight', system-ui, sans-serif;
+  --ease:cubic-bezier(.65,0,.35,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-weight:400;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body.is-loading{overflow:hidden}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+img,video{display:block;max-width:100%}
+::selection{background:var(--ink);color:var(--bg)}
+.wrap{width:min(1320px,calc(100% - 48px));margin:0 auto}
+@media (max-width:640px){.wrap{width:calc(100% - 32px)}}
+.label{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--mute);font-weight:500}
+.serif{font-family:var(--serif);font-weight:400}
+.serif i,.serif em{font-style:italic}
+
+/* film grain (very subtle) */
+body::after{content:"";position:fixed;inset:-50%;z-index:95;pointer-events:none;opacity:.045;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation:grain .9s steps(3) infinite}
+@keyframes grain{0%{transform:translate(0,0)}33%{transform:translate(-2%,1%)}66%{transform:translate(1%,-2%)}}
+
+/* ---------- loader ---------- */
+#loader{position:fixed;inset:0;z-index:200;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px}
+.ld-word{font-family:var(--serif);font-size:clamp(48px,9vw,120px);letter-spacing:.02em;display:flex;overflow:hidden}
+.ld-word span{display:inline-block;transform:translateY(105%)}
+.ld-bar{width:min(320px,60vw);height:1px;background:var(--line);position:relative;overflow:hidden}
+.ld-bar i{position:absolute;inset:0;background:var(--ink);transform-origin:left;transform:scaleX(0)}
+.ld-meta{display:flex;justify-content:space-between;width:min(320px,60vw)}
+
+/* ---------- cursor ---------- */
+.cur{position:fixed;left:0;top:0;z-index:300;pointer-events:none;width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:50%;background:var(--ink);mix-blend-mode:difference;transition:width .35s var(--ease),height .35s var(--ease),margin .35s var(--ease)}
+.cur.hover{width:64px;height:64px;margin:-32px 0 0 -32px}
+.cur-txt{position:fixed;z-index:301;pointer-events:none;font-size:10px;letter-spacing:.2em;font-weight:600;color:#000;transform:translate(-50%,-50%);opacity:0;transition:opacity .2s}
+@media not ((hover:hover) and (pointer:fine)){.cur,.cur-txt{display:none}}
+
+/* ---------- nav ---------- */
+nav{position:fixed;inset:0 0 auto 0;z-index:100;padding:22px 0;transition:background .5s, padding .5s}
+nav.solid{background:rgba(10,10,11,.7);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);padding:14px 0;border-bottom:1px solid var(--line)}
+.nav-in{display:grid;grid-template-columns:1fr auto 1fr;align-items:center}
+.nav-l,.nav-r{display:flex;gap:30px;font-size:13px;font-weight:500}
+.nav-r{justify-content:flex-end;align-items:center}
+.nav-l a,.nav-r a{opacity:.75;transition:opacity .3s}
+.nav-l a:hover,.nav-r a:hover{opacity:1}
+.brand{font-family:var(--serif);font-size:30px;letter-spacing:.06em;line-height:1;text-align:center}
+.brand small{display:block;font-family:var(--sans);font-size:8.5px;letter-spacing:.42em;color:var(--mute);margin-top:4px}
+.bag{display:flex;align-items:center;gap:10px;border:1px solid var(--line);padding:9px 16px;border-radius:99px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;opacity:1!important;transition:border-color .3s}
+.bag:hover{border-color:var(--ink)}
+.bag b{font-weight:600;min-width:14px;text-align:center}
+@media (max-width:860px){.nav-l{display:none}.nav-in{grid-template-columns:auto 1fr}.brand{text-align:left}.nav-r a:not(.bag){display:none}}
+
+/* ---------- HERO (pinned flavour reel) ---------- */
+#hero{position:relative}
+.hero-stick{position:sticky;top:0;height:100svh;overflow:hidden;isolation:isolate}
+.hero-glow{position:absolute;inset:0;z-index:-2;background:
+  radial-gradient(60% 55% at 50% 58%, color-mix(in srgb,var(--accent) 38%,transparent), transparent 70%),
+  radial-gradient(120% 80% at 50% 120%, color-mix(in srgb,var(--accent) 22%,transparent), transparent 60%), var(--bg);
+  transition:background 1.2s var(--ease)}
+#dust{position:absolute;inset:0;z-index:-1;pointer-events:none}
+.giant{position:absolute;left:0;right:0;top:33%;z-index:0;text-align:center;pointer-events:none}
+.giant .nm{position:absolute;left:0;right:0;top:0;transform:translateY(-50%);font-family:var(--serif);font-size:clamp(90px,19vw,330px);line-height:.9;letter-spacing:-.02em;white-space:nowrap;color:var(--accent);display:flex;justify-content:center}
+.giant .nm .c{display:inline-block;overflow:hidden;padding:0 .01em}
+.giant .nm .c span{display:inline-block}
+.giant .nm{visibility:hidden}.giant .nm.vis{visibility:visible}
+.giant .nm.long{font-size:clamp(64px,13vw,230px)}
+.stage{position:absolute;left:50%;top:55%;width:min(56svh,86vw);aspect-ratio:1;transform:translate(-50%,-50%);z-index:1}
+.slide{position:absolute;inset:0;opacity:0;will-change:transform,opacity,filter}
+.slide img,.slide video{width:100%;height:100%;object-fit:cover;
+  -webkit-mask:radial-gradient(closest-side,#000 55%,transparent 100%);mask:radial-gradient(closest-side,#000 55%,transparent 100%)}
+.slide video{position:absolute;inset:0}
+.shadow{position:absolute;left:50%;bottom:6%;width:60%;height:8%;transform:translateX(-50%);background:radial-gradient(closest-side,rgba(0,0,0,.7),transparent);z-index:-1;filter:blur(6px)}
+
+.hero-top{position:absolute;top:96px;left:0;right:0;z-index:3}
+.hero-top .wrap{display:flex;justify-content:space-between;align-items:flex-start}
+.counter{font-family:var(--serif);font-size:22px;display:flex;align-items:baseline;gap:8px}
+.counter .cnum{display:inline-block;overflow:hidden;height:1.1em;line-height:1.1}
+.counter .cnum span{display:block}
+.coll{text-align:right}
+.coll .label{display:block;margin-bottom:6px}
+.coll .v{font-size:14px;font-weight:500;letter-spacing:.04em}
+
+.hero-bot{position:absolute;bottom:34px;left:0;right:0;z-index:3}
+.hero-bot .wrap{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:end}
+.pitch{max-width:380px}
+.pitch p{font-size:15px;line-height:1.55;color:rgba(242,239,233,.78);min-height:3.1em}
+.pitch .row{display:flex;gap:12px;margin-top:20px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:12px;height:48px;padding:0 24px;border-radius:99px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;transition:background .35s,color .35s,border-color .35s,transform .35s var(--ease)}
+.btn.fill{background:var(--ink);color:var(--bg)}
+.btn.fill:hover{background:var(--accent);color:#000}
+.btn.ghost{border:1px solid rgba(242,239,233,.35)}
+.btn.ghost:hover{border-color:var(--ink);background:rgba(242,239,233,.06)}
+.btn .arr{transition:transform .35s var(--ease)}
+.btn:hover .arr{transform:translateX(4px)}
+.specs{justify-self:end;width:min(380px,100%);padding:4px 16px;border-radius:6px;background:rgba(10,10,11,.45);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.spec{display:grid;grid-template-columns:1fr auto;padding:11px 0;border-top:1px solid var(--line);font-size:13px;align-items:center}
+.spec:last-child{border-bottom:1px solid var(--line)}
+.spec .k{color:var(--mute);letter-spacing:.04em}
+.spec .v{font-weight:500;overflow:hidden;height:1.35em}
+.spec .v span{display:block}
+.meter{display:flex;gap:4px}
+.meter i{width:18px;height:3px;background:rgba(242,239,233,.18);transition:background .6s}
+.meter i.on{background:var(--accent)}
+.reel{display:grid;grid-template-columns:repeat(var(--n),1fr);gap:8px;margin-top:26px;grid-column:1/-1}
+.reel button{text-align:left;padding-top:12px;position:relative;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);transition:color .4s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.reel button::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:rgba(242,239,233,.15)}
+.reel button i{position:absolute;top:0;left:0;height:2px;width:0;background:var(--ink)}
+.reel button.done i{width:100%}
+.reel button.on{color:var(--ink)}
+.scroll-cue{position:absolute;left:50%;bottom:0;transform:translateX(-50%);z-index:3}
+@media (max-width:860px){
+  .hero-bot .wrap{grid-template-columns:1fr}.specs{display:none}
+  .stage{top:48%;width:min(92vw,52svh)}
+  .giant{top:24%}
+  .reel button{font-size:0}.reel button.on{font-size:10px}
+  .pitch p{font-size:14px}
+}
+
+/* ---------- statement ---------- */
+#statement{padding:200px 0 140px}
+.stmt{font-family:var(--serif);font-size:clamp(36px,5.4vw,86px);line-height:1.04;letter-spacing:-.01em;max-width:1200px}
+.stmt .w{opacity:.14;display:inline-block}
+.stmt em{font-style:italic}
+.figs{display:grid;grid-template-columns:repeat(4,1fr);margin-top:110px;border-top:1px solid var(--line)}
+.fig{padding:30px 24px 0 0}
+.fig + .fig{padding-left:24px;border-left:1px solid var(--line)}
+.fig b{display:block;font-family:var(--serif);font-weight:400;font-size:clamp(54px,6vw,96px);line-height:1}
+.fig b sup{font-size:.35em;vertical-align:top;margin-left:4px;color:var(--mute)}
+.fig span{display:block;margin-top:10px}
+@media (max-width:860px){.figs{grid-template-columns:1fr 1fr}.fig:nth-child(3){padding-left:0;border-left:0}.fig{padding-bottom:30px}}
+
+/* ---------- collections ---------- */
+#collections{padding:60px 0 160px}
+.sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:30px;margin-bottom:56px;flex-wrap:wrap}
+.sec-head h2{font-family:var(--serif);font-weight:400;font-size:clamp(46px,6.4vw,104px);line-height:.95;letter-spacing:-.015em}
+.sec-head h2 em{font-style:italic;color:var(--mute)}
+.sec-head p{max-width:360px;color:rgba(242,239,233,.7);line-height:1.6;font-size:15px}
+.colls{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.cc{position:relative;aspect-ratio:3/4.2;overflow:hidden;border-radius:4px;background:var(--bg-2);display:block}
+.cc img{position:absolute;inset:-5%;width:110%;height:110%;object-fit:cover;transition:transform 1.4s var(--ease),filter 1.4s var(--ease);filter:brightness(.78)}
+.cc:hover img{transform:scale(1.07);filter:brightness(.95)}
+.cc::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.55),transparent 35%,transparent 55%,rgba(0,0,0,.85))}
+.cc .t{position:absolute;inset:auto 28px 28px 28px;z-index:2;display:flex;justify-content:space-between;align-items:flex-end}
+.cc .top{position:absolute;top:24px;left:28px;right:28px;z-index:2;display:flex;justify-content:space-between}
+.cc h3{font-family:var(--serif);font-weight:400;font-size:clamp(34px,3.2vw,52px);line-height:1}
+.cc .go{width:48px;height:48px;border-radius:50%;border:1px solid rgba(242,239,233,.4);display:grid;place-items:center;transition:background .4s,color .4s,transform .5s var(--ease)}
+.cc:hover .go{background:var(--ink);color:#000;transform:rotate(-45deg)}
+@media (max-width:860px){.colls{grid-template-columns:1fr}.cc{aspect-ratio:4/4.4}}
+
+/* ---------- craft (pinned) ---------- */
+#craft{position:relative;height:400vh;background:#060607}
+.craft-stick{position:sticky;top:0;height:100svh;display:grid;grid-template-columns:1fr 1fr;overflow:hidden}
+.craft-l{display:flex;flex-direction:column;justify-content:center;padding:0 6vw}
+.craft-l .label{margin-bottom:28px}
+.steps{position:relative;height:300px}
+.step{position:absolute;inset:0;opacity:0}
+.step .n{font-family:var(--serif);font-size:20px;color:var(--mute)}
+.step h3{font-family:var(--serif);font-weight:400;font-size:clamp(40px,4.6vw,76px);line-height:1;margin:14px 0 22px}
+.step h3 em{font-style:italic}
+.step p{max-width:420px;color:rgba(242,239,233,.72);line-height:1.6}
+.ticks{display:flex;gap:10px;margin-top:40px}
+.ticks i{width:40px;height:2px;background:rgba(242,239,233,.15);position:relative;overflow:hidden}
+.ticks i b{position:absolute;inset:0;background:var(--ink);transform-origin:left;transform:scaleX(0)}
+.craft-r{position:relative;overflow:hidden}
+.craft-r img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;clip-path:inset(100% 0 0 0)}
+.craft-r img:first-child{clip-path:inset(0 0 0 0)}
+@media (max-width:860px){.craft-stick{grid-template-columns:1fr;grid-template-rows:45svh 1fr}.craft-r{order:-1}.steps{height:260px}.craft-l{justify-content:flex-start;padding-top:30px}}
+
+/* ---------- range ---------- */
+#range{padding:160px 0}
+.filters{display:flex;gap:28px;border-bottom:1px solid var(--line);margin-bottom:40px;overflow-x:auto}
+.filters button{padding:0 0 16px;font-size:13px;letter-spacing:.06em;color:var(--mute);position:relative;white-space:nowrap;transition:color .3s}
+.filters button::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--ink);transform:scaleX(0);transform-origin:left;transition:transform .5s var(--ease)}
+.filters button.on{color:var(--ink)}
+.filters button.on::after{transform:scaleX(1)}
+.filters sup{font-size:9px;margin-left:3px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
+.card{background:var(--bg);padding:22px;display:flex;flex-direction:column;position:relative;overflow:hidden;transition:background .5s}
+.card:hover{background:#121214}
+.card .im{aspect-ratio:1;margin:6px -6px 14px;overflow:hidden}
+.card .im img{width:100%;height:100%;object-fit:cover;transition:transform 1.1s var(--ease);-webkit-mask:radial-gradient(closest-side,#000 70%,transparent);mask:radial-gradient(closest-side,#000 70%,transparent)}
+.card:hover .im img{transform:scale(1.08)}
+.card .hd{display:flex;justify-content:space-between;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--mute)}
+.card .hd .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--c);margin-right:8px;vertical-align:1px}
+.card h4{font-family:var(--serif);font-weight:400;font-size:30px;line-height:1.02}
+.card .ft{display:flex;justify-content:space-between;align-items:center;margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.card .pr{font-size:15px;font-weight:500}
+.card .pr small{color:var(--mute);font-weight:400;margin-left:6px;font-size:12px}
+.add{height:38px;padding:0 16px;border-radius:99px;border:1px solid rgba(242,239,233,.3);font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;transition:all .35s}
+.add:hover{background:var(--ink);color:#000;border-color:var(--ink)}
+.card.sold .add{opacity:.4;pointer-events:none}
+.card .so{position:absolute;top:58px;right:22px;font-size:10px;letter-spacing:.2em;border:1px solid var(--line);padding:5px 9px;border-radius:99px;color:var(--mute);background:var(--bg)}
+.card.hide{display:none}
+@media (max-width:1100px){.grid{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:760px){.grid{grid-template-columns:repeat(2,1fr)}.card{padding:14px}.card h4{font-size:22px}.card .ft{flex-direction:column;align-items:flex-start;gap:10px}}
+
+/* ---------- pairing ---------- */
+#pairing{padding:140px 0 160px;background:#060607;position:relative}
+.pl{border-top:1px solid var(--line)}
+.pr-row{display:grid;grid-template-columns:70px 1.1fr 1fr 40px;align-items:center;padding:28px 0;border-bottom:1px solid var(--line);position:relative;transition:padding .5s var(--ease)}
+.pr-row::before{content:"";position:absolute;inset:0;background:var(--c);opacity:0;transition:opacity .5s;z-index:-1}
+.pr-row:hover{padding-left:18px}
+.pr-row:hover::before{opacity:.08}
+.pr-row .i{font-family:var(--serif);color:var(--mute);font-size:18px}
+.pr-row .g{font-family:var(--serif);font-size:clamp(30px,3.6vw,58px);line-height:1}
+.pr-row .f{font-size:14px;color:rgba(242,239,233,.75)}
+.pr-row .f b{display:block;color:var(--ink);font-weight:500;font-size:16px;margin-bottom:4px}
+.pr-row .a{justify-self:end;transition:transform .5s var(--ease)}
+.pr-row:hover .a{transform:rotate(-45deg)}
+.peek{position:fixed;left:0;top:0;width:300px;aspect-ratio:1;z-index:50;pointer-events:none;opacity:0;transform:translate(-50%,-50%) scale(.6);border-radius:50%;overflow:hidden}
+.peek img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+@media (max-width:760px){.pr-row{grid-template-columns:40px 1fr 30px}.pr-row .f{grid-column:2;grid-row:2;margin-top:8px}.pr-row .a{grid-row:1/3;grid-column:3}}
+
+/* ---------- finale ---------- */
+#finale{position:relative;height:100svh;min-height:640px;overflow:hidden;display:grid;place-items:center;text-align:center}
+#finale .bgimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.38) saturate(.9)}
+#finale::after{content:"";position:absolute;inset:0;z-index:1;background:radial-gradient(ellipse 55% 50% at 50% 50%,rgba(0,0,0,.7),transparent 75%),linear-gradient(180deg,var(--bg),transparent 25%,transparent 75%,var(--bg))}
+#finale .in{position:relative;z-index:2;padding:0 16px}
+#finale h2{font-family:var(--serif);font-weight:400;font-size:clamp(60px,11vw,190px);line-height:.88;letter-spacing:-.02em}
+#finale h2 em{font-style:italic}
+#finale p{margin:26px auto 34px;color:rgba(242,239,233,.8);max-width:460px;line-height:1.6}
+
+/* ---------- footer ---------- */
+footer{padding:90px 0 30px;border-top:1px solid var(--line)}
+.fgrid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:30px}
+.fgrid h5{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--mute);font-weight:500;margin-bottom:18px}
+.fgrid li{list-style:none;margin:10px 0;font-size:14px;opacity:.85}
+.fgrid li a:hover{opacity:1;text-decoration:underline;text-underline-offset:4px}
+.news{display:flex;border-bottom:1px solid rgba(242,239,233,.35);max-width:380px;margin-top:22px}
+.news input{flex:1;background:none;border:0;color:var(--ink);font:inherit;padding:12px 0;outline:none}
+.news input::placeholder{color:var(--mute)}
+.fword{font-family:var(--serif);font-size:clamp(80px,21vw,360px);line-height:.8;letter-spacing:-.03em;text-align:center;margin-top:90px;color:transparent;-webkit-text-stroke:1px rgba(242,239,233,.22)}
+.fnote{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-top:28px;font-size:12px;color:var(--mute)}
+@media (max-width:860px){.fgrid{grid-template-columns:1fr 1fr}.fgrid > div:first-child{grid-column:1/-1}}
+
+/* toast */
+.toast{position:fixed;right:24px;bottom:24px;z-index:150;background:var(--ink);color:#000;padding:16px 20px;border-radius:4px;display:flex;gap:14px;align-items:center;font-size:14px;transform:translateY(140%);transition:transform .6s var(--ease);max-width:calc(100% - 48px)}
+.toast img{width:44px;height:44px;object-fit:cover;border-radius:50%}
+.toast small{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.6}
+.toast.show{transform:none}
+
+.rv{opacity:0;transform:translateY(40px)}
+.nogs .rv{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){body::after{animation:none}}
+</style>
+</head>
+<body class="is-loading">
+
+<div id="loader">
+  <div class="ld-word" id="ldWord"></div>
+  <div class="ld-bar"><i id="ldBar"></i></div>
+  <div class="ld-meta label"><span>Gourmet popcorn</span><span id="ldPct">000</span></div>
+</div>
+
+<div class="cur" id="cur"></div><div class="cur-txt" id="curTxt"></div>
+
+<nav id="nav">
+  <div class="wrap nav-in">
+    <div class="nav-l"><a href="#range">Flavours</a><a href="#collections">Collections</a><a href="#craft">The Craft</a><a href="#pairing">Pairings</a></div>
+    <a href="#top" class="brand">POPKING<small>EST. 1996</small></a>
+    <div class="nav-r"><a href="#finale">Contact</a><a href="#range" class="bag" data-cur="BAG">Bag <b id="bagN">0</b></a></div>
+  </div>
+</nav>
+
+<main id="top">
+
+<!-- ============ HERO REEL ============ -->
+<section id="hero">
+  <div class="hero-stick">
+    <div class="hero-glow" id="glow"></div>
+    <canvas id="dust"></canvas>
+    <div class="giant" id="giant"></div>
+    <div class="stage" id="stage"><div class="shadow"></div></div>
+
+    <div class="hero-top"><div class="wrap">
+      <div class="counter"><span class="cnum"><span id="cIdx">01</span></span><span style="color:var(--mute)">/ <span id="cTot">07</span></span></div>
+      <div class="coll"><span class="label">Collection</span><span class="v" id="hColl">Savoury</span></div>
+    </div></div>
+
+    <div class="hero-bot"><div class="wrap">
+      <div class="pitch">
+        <span class="label">Popking · Since 1996</span>
+        <p id="hDesc" style="margin-top:12px"></p>
+        <div class="row">
+          <a href="#range" class="btn fill" id="hAdd" data-cur="ADD">Add to bag <span class="arr">→</span></a>
+          <a href="#range" class="btn ghost" data-cur="VIEW">All flavours</a>
+        </div>
+      </div>
+      <div class="specs">
+        <div class="spec"><span class="k">Profile</span><span class="v"><span id="sProf"></span></span></div>
+        <div class="spec"><span class="k" id="sIntK">Intensity</span><span class="meter" id="sInt"><i></i><i></i><i></i><i></i><i></i></span></div>
+        <div class="spec"><span class="k">Net weight</span><span class="v"><span id="sWt"></span></span></div>
+        <div class="spec"><span class="k">Best paired with</span><span class="v"><span id="sPair"></span></span></div>
+        <div class="spec"><span class="k">Price</span><span class="v"><span id="sPr"></span></span></div>
+      </div>
+      <div class="reel" id="reel"></div>
+    </div></div>
+  </div>
+</section>
+
+<!-- ============ STATEMENT ============ -->
+<section id="statement">
+  <div class="wrap">
+    <span class="label">Our philosophy</span>
+    <p class="stmt" id="stmt" style="margin-top:28px">Since 1996 we have treated popcorn the way others treat <em>fine chocolate.</em> Small batches. Fearless seasoning. Every kernel finished as if it were the only one.</p>
+    <div class="figs">
+      <div class="fig"><b data-n="30">0</b><span class="label">Years of popping</span></div>
+      <div class="fig"><b data-n="18">0</b><span class="label">Signature flavours</span></div>
+      <div class="fig"><b data-n="3">0</b><span class="label">Collections</span></div>
+      <div class="fig"><b data-n="1">0</b><span class="label">Obsession</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ COLLECTIONS ============ -->
+<section id="collections">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 class="rv">Three collections.<br><em>One standard.</em></h2>
+      <p class="rv">From fiery desi classics to dessert-inspired indulgence, each collection is built for a different kind of night.</p>
+    </div>
+    <div class="colls">
+      <a href="#range" class="cc rv" data-f="savoury" data-cur="EXPLORE"><img data-src="IMG-8846" alt="Peri Peri popcorn"><div class="top label"><span>01</span><span>10 flavours</span></div><div class="t"><h3>Savoury</h3><span class="go">→</span></div></a>
+      <a href="#range" class="cc rv" data-f="sweet" data-cur="EXPLORE"><img data-src="IMG-8862" alt="Dark choco caramel popcorn"><div class="top label"><span>02</span><span>4 flavours</span></div><div class="t"><h3>Sweet &amp; <i>Chocolate</i></h3><span class="go">→</span></div></a>
+      <a href="#range" class="cc rv" data-f="premium" data-cur="EXPLORE"><img data-src="IMG-8867" alt="Blueberry blast popcorn"><div class="top label"><span>03</span><span>3 flavours</span></div><div class="t"><h3>Premium <i>Moments</i></h3><span class="go">→</span></div></a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CRAFT ============ -->
+<section id="craft">
+  <div class="craft-stick">
+    <div class="craft-l">
+      <span class="label">The craft</span>
+      <div class="steps">
+        <div class="step"><span class="n">01 — Kernel</span><h3>It begins with <em>the kernel.</em></h3><p>Every batch starts with selected corn, chosen to pop big, round and crisp, built to carry flavour rather than hide behind it.</p></div>
+        <div class="step"><span class="n">02 — Batch</span><h3>Popped in <em>small batches.</em></h3><p>No industrial shortcuts. Smaller runs mean tighter control over heat, timing and texture in every tub.</p></div>
+        <div class="step"><span class="n">03 — Coat</span><h3>Coated, <em>not dusted.</em></h3><p>Seasonings and glazes are layered on until every piece carries the full flavour, from the first handful to the last.</p></div>
+        <div class="step"><span class="n">04 — Seal</span><h3>Sealed for <em>the screening.</em></h3><p>Packed fresh into our signature tub, ready for whatever is playing tonight.</p></div>
+      </div>
+      <div class="ticks" id="ticks"><i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i></div>
+    </div>
+    <div class="craft-r" id="craftR">
+      <img data-src="IMG-8854" alt=""><img data-src="IMG-8848" alt=""><img data-src="IMG-8860" alt=""><img data-src="IMG-8864" alt="">
+    </div>
+  </div>
+</section>
+
+<!-- ============ RANGE ============ -->
+<section id="range">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 class="rv">The full <em>range.</em></h2>
+      <p class="rv">Eighteen flavours. Choose your favourite, or build a bag for the whole room.</p>
+    </div>
+    <div class="filters" id="filters">
+      <button class="on" data-f="all">All<sup>17</sup></button>
+      <button data-f="savoury">Savoury<sup>10</sup></button>
+      <button data-f="sweet">Sweet &amp; Chocolate<sup>4</sup></button>
+      <button data-f="premium">Premium Moments<sup>3</sup></button>
+    </div>
+    <div class="grid" id="grid"></div>
+  </div>
+</section>
+
+<!-- ============ PAIRING ============ -->
+<section id="pairing">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 class="rv">The pairing <em>guide.</em></h2>
+      <p class="rv">Wine has sommeliers. Movies have us. Tell us what's playing and we'll tell you what to open.</p>
+    </div>
+    <div class="pl" id="pl"></div>
+  </div>
+  <div class="peek" id="peek"></div>
+</section>
+
+<!-- ============ FINALE ============ -->
+<section id="finale">
+  <img class="bgimg" data-src="IMG-8862" alt="" id="finImg">
+  <div class="in">
+    <span class="label">Tonight's feature</span>
+    <h2 style="margin-top:20px">Lights down.<br><em>Lid off.</em></h2>
+    <p>Gourmet popcorn, three decades in the making. Best enjoyed in the dark.</p>
+    <a href="#range" class="btn fill" data-cur="SHOP">Shop the collection <span class="arr">→</span></a>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fgrid">
+      <div><div class="brand" style="text-align:left">POPKING<small>GOURMET POPCORN · EST. 1996</small></div>
+        <div class="news"><input type="email" placeholder="Join the premiere list"><button class="label" style="color:var(--ink)">Subscribe →</button></div></div>
+      <div><h5>Shop</h5><ul><li><a href="#range">Savoury</a></li><li><a href="#range">Sweet &amp; Chocolate</a></li><li><a href="#range">Premium Moments</a></li></ul></div>
+      <div><h5>House</h5><ul><li><a href="#statement">Philosophy</a></li><li><a href="#craft">The Craft</a></li><li><a href="#pairing">Pairing guide</a></li></ul></div>
+      <div><h5>Follow</h5><ul><li><a href="#">Instagram</a></li><li><a href="#">YouTube</a></li><li><a href="#finale">Contact</a></li></ul></div>
+    </div>
+    <div class="fword">Popking</div>
+    <div class="fnote"><span>© 2026 Popking. All rights reserved.</span><span>Concept redesign. Prototype for presentation.</span></div>
+  </div>
+</footer>
+
+<div class="toast" id="toast"><img id="tImg" alt=""><div><small>Added to bag</small><span id="tTxt"></span></div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script>
+(() => {
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const G = typeof gsap !== 'undefined';
+if (!G) document.documentElement.classList.add('nogs');
+const IMG = (id, w = 1200) => `https://cdn.shopify.com/s/files/1/0798/6538/1174/files/${id}.png?width=${w}`;
+$$('img[data-src]').forEach(i => i.src = IMG(i.dataset.src, i.closest('#finale,.craft-r') ? 1800 : 1000));
+
+/* ================= DATA ================= */
+// Drop a scroll-scrub video at videos/<slug>.mp4 and it replaces the photo automatically.
+const HERO = [
+  {slug:'masala', n:'Masala', img:'IMG-8855', c:'#E0832B', coll:'Savoury', prof:'Desi spice · Warm', ik:'Heat', int:3, wt:'60 g', pair:'Cricket night', pr:100,
+   d:'The house classic. Toasted cumin, chilli and a whisper of tang. The flavour every Indian movie night was built around.'},
+  {slug:'peri-peri', n:'Peri Peri', img:'IMG-8846', c:'#E5432F', coll:'Savoury', prof:'Smoked chilli · Citrus', ik:'Heat', int:5, wt:'60 g', pair:'Action', pr:120,
+   d:'Bird’s-eye heat with a bright citrus finish. Built for car chases, explosions and the final showdown.'},
+  {slug:'caramel', n:'Caramel', img:'IMG-8848', c:'#D9A35B', coll:'Sweet & Chocolate', prof:'Butter · Burnt sugar', ik:'Sweetness', int:4, wt:'90 g', pair:'Animated classics', pr:150,
+   d:'Slow-cooked caramel, glass-crisp and glossy. The golden standard of sweet popcorn.'},
+  {slug:'dark-choco-caramel', n:'Dark Choco', img:'IMG-8862', c:'#9B6A47', coll:'Sweet & Chocolate', prof:'Cocoa · Caramel', ik:'Richness', int:5, wt:'120 g', pair:'Thrillers', pr:200,
+   d:'Dark chocolate over caramel. Brooding, layered and finished with a twist you won’t see coming.'},
+  {slug:'blueberry-blast', n:'Blueberry', img:'IMG-8867', c:'#8B76E0', coll:'Premium Moments', prof:'Berry · Cream', ik:'Sweetness', int:3, wt:'120 g', pair:'Science fiction', pr:280,
+   d:'A violet-hued cult favourite. Bright blueberry over a creamy coat. Popcorn from another dimension.'},
+  {slug:'shahi-rasmalai', n:'Rasmalai', img:'IMG-8864', c:'#E3C26B', coll:'Premium Moments', prof:'Saffron · Cardamom · Nut', ik:'Richness', int:4, wt:'120 g', pair:'Bollywood epics', pr:260,
+   d:'A royal mithai reimagined. Saffron, cardamom and pistachio, for three-hour sagas and family nights.'},
+  {slug:'strawberry-creme', n:'Strawberry', img:'IMG-8863', c:'#E9819F', coll:'Premium Moments', prof:'Strawberry · Crème', ik:'Sweetness', int:4, wt:'120 g', pair:'Romance', pr:250,
+   d:'Soft pink, softly sweet. Strawberries and crème for the love stories you’ll pretend not to cry at.'},
+];
+const RANGE = [
+  {n:'Masala',img:'IMG-8855',c:'savoury',pr:100,wt:'60 g',col:'#E0832B'},
+  {n:'Peri Peri',img:'IMG-8846',c:'savoury',pr:120,wt:'60 g',col:'#E5432F'},
+  {n:'Chilli Chatka',img:'IMG-8866',c:'savoury',pr:120,wt:'60 g',col:'#D6452B'},
+  {n:'Chilli Cheese',img:'IMG-8856',c:'savoury',pr:120,wt:'60 g',col:'#F08A3C'},
+  {n:'Cheese',img:'IMG-8849',c:'savoury',pr:120,wt:'60 g',col:'#F2C14E'},
+  {n:'Cheddar Cheese',img:'IMG-8850',c:'savoury',pr:120,wt:'60 g',col:'#F0A93B'},
+  {n:'Maggi',img:'IMG-8865',c:'savoury',pr:120,wt:'60 g',col:'#F5D02B'},
+  {n:'Pudina',img:'IMG-8876',c:'savoury',pr:120,wt:'60 g',col:'#56C08A'},
+  {n:'Tomato',img:'IMG-8852',c:'savoury',pr:120,wt:'60 g',col:'#E25C45'},
+  {n:'Salted',img:'IMG-8854',c:'savoury',pr:100,wt:'60 g',col:'#E9E0C8',sold:1},
+  {n:'Caramel',img:'IMG-8848',c:'sweet',pr:150,wt:'90 g',col:'#D9A35B'},
+  {n:'Choco Caramel',img:'IMG-8859',c:'sweet',pr:200,wt:'120 g',col:'#8C5A36',sold:1},
+  {n:'Dark Choco Caramel',img:'IMG-8862',c:'sweet',pr:200,wt:'120 g',col:'#6B4129',sold:1},
+  {n:'Premium Chocolate Coated',img:'IMG-8860',c:'sweet',pr:250,wt:'150 g',col:'#7A4A2C'},
+  {n:'Blueberry Blast',img:'IMG-8867',c:'premium',pr:280,wt:'120 g',col:'#8B76E0'},
+  {n:'Shahi Rasmalai',img:'IMG-8864',c:'premium',pr:260,wt:'120 g',col:'#E3C26B'},
+  {n:'Strawberry & Crème',img:'IMG-8863',c:'premium',pr:250,wt:'120 g',col:'#E9819F'},
+];
+const PAIRS = [
+  {g:'Horror',f:'Chilli Chatka',img:'IMG-8866',c:'#D6452B',why:'Heat that makes you jump before the film does.'},
+  {g:'Romance',f:'Strawberry & Crème',img:'IMG-8863',c:'#E9819F',why:'Soft, sweet and a little indulgent.'},
+  {g:'Action',f:'Peri Peri',img:'IMG-8846',c:'#E5432F',why:'Maximum heat for maximum stakes.'},
+  {g:'Bollywood',f:'Shahi Rasmalai',img:'IMG-8864',c:'#E3C26B',why:'Royal, rich and built for an interval.'},
+  {g:'Thriller',f:'Dark Choco Caramel',img:'IMG-8862',c:'#9B6A47',why:'Dark, layered, with a twist at the end.'},
+  {g:'Science Fiction',f:'Blueberry Blast',img:'IMG-8867',c:'#8B76E0',why:'A flavour that feels from the future.'},
+  {g:'Cricket Night',f:'Masala',img:'IMG-8855',c:'#E0832B',why:'Last over, six needed. Only masala holds its nerve.'},
+];
+
+/* ================= LOADER ================= */
+$('#ldWord').innerHTML = [...'POPKING'].map(c => `<span>${c}</span>`).join('');
+
+/* ================= HERO BUILD ================= */
+const N = HERO.length, stage = $('#stage'), giant = $('#giant'), reel = $('#reel');
+$('#cTot').textContent = String(N).padStart(2,'0');
+reel.style.setProperty('--n', N);
+HERO.forEach((h,i) => {
+  const s = document.createElement('div'); s.className = 'slide';
+  s.innerHTML = `<img src="${IMG(h.img,1400)}" alt="Popking ${h.n} popcorn">`;
+  stage.appendChild(s); h.el = s;
+  // video slot: replaces the photo if videos/<slug>.mp4 exists
+  const v = document.createElement('video');
+  v.muted = true; v.playsInline = true; v.loop = true; v.preload = 'auto'; v.src = `videos/${h.slug}.mp4`;
+  v.addEventListener('loadeddata', () => { s.appendChild(v); s.querySelector('img').style.visibility = 'hidden'; h.video = v; }, {once:true});
+  v.addEventListener('error', () => {}, {once:true});
+  const nm = document.createElement('div'); nm.className = 'nm' + (h.n.length > 8 ? ' long' : '');
+  nm.innerHTML = [...h.n].map(ch => `<span class="c"><span>${ch === ' ' ? '&nbsp;' : ch}</span></span>`).join('');
+  giant.appendChild(nm); h.nm = nm;
+  if (G) gsap.set(nm.querySelectorAll('.c span'), {yPercent:110});
+  const b = document.createElement('button'); b.innerHTML = `<i></i>${h.n}`; b.dataset.cur = 'VIEW'; reel.appendChild(b); h.btn = b;
+  b.addEventListener('click', () => goTo(i, true));
+});
+
+let cur = -1;
+const swapText = (el, txt) => {
+  if (!G) { el.textContent = txt; return; }
+  gsap.to(el, {yPercent:-100, opacity:0, duration:.35, ease:'power2.in', onComplete:() => { el.textContent = txt; gsap.fromTo(el,{yPercent:100,opacity:0},{yPercent:0,opacity:1,duration:.55,ease:'power3.out'}); }});
+};
+function setSlide(i){
+  if (i === cur) return;
+  const prev = cur, dir = prev === -1 ? 1 : (i > prev || (prev === N-1 && i === 0) ? 1 : -1);
+  cur = i; const h = HERO[i];
+  HERO.forEach((x,k) => x.nm.classList.toggle('vis', k === i || k === prev));
+  document.documentElement.style.setProperty('--accent', h.c);
+  // media
+  if (G) {
+    if (prev >= 0) {
+      const p = HERO[prev];
+      gsap.to(p.el,{yPercent:-14*dir, scale:.86, opacity:0, filter:'blur(14px)', rotate:-6*dir, duration:.9, ease:'power3.inOut', overwrite:true});
+      gsap.to(p.nm.querySelectorAll('.c span'),{yPercent:-110*dir, duration:.6, stagger:.025, ease:'power3.in', overwrite:true});
+      if (p.video) p.video.pause();
+    }
+    gsap.fromTo(h.el,{yPercent:18*dir, scale:1.18, opacity:0, filter:'blur(18px)', rotate:8*dir},
+      {yPercent:0, scale:1, opacity:1, filter:'blur(0px)', rotate:0, duration:1.25, ease:'expo.out', delay:prev<0?0:.25, overwrite:true});
+    gsap.fromTo(h.nm.querySelectorAll('.c span'),{yPercent:110*dir},{yPercent:0, duration:1, stagger:.04, ease:'expo.out', delay:prev<0?.1:.35, overwrite:true});
+  } else { HERO.forEach((x,k) => x.el.style.opacity = k===i?1:0); h.nm.querySelectorAll('.c span').forEach(s => s.style.transform='none'); }
+  if (h.video && !userScrubbing) { h.video.currentTime = 0; h.video.play().catch(()=>{}); }
+  // text
+  swapText($('#cIdx'), String(i+1).padStart(2,'0'));
+  swapText($('#hColl'), h.coll);
+  swapText($('#sProf'), h.prof);
+  swapText($('#sWt'), h.wt);
+  swapText($('#sPair'), h.pair);
+  swapText($('#sPr'), '₹' + h.pr);
+  $('#sIntK').textContent = h.ik;
+  $$('#sInt i').forEach((m,k) => m.classList.toggle('on', k < h.int));
+  if (G) gsap.to('#hDesc',{opacity:0,y:-10,duration:.3,onComplete:()=>{ $('#hDesc').textContent = h.d; gsap.to('#hDesc',{opacity:1,y:0,duration:.6,ease:'power3.out'}); }});
+  else $('#hDesc').textContent = h.d;
+  $('#hAdd').dataset.name = HERO[i].n;
+  // reel bars
+  HERO.forEach((x,k) => { x.btn.classList.toggle('on', k===i); x.btn.classList.toggle('done', k<i); const bar = x.btn.querySelector('i'); if (G) gsap.killTweensOf(bar); bar.style.width = k<i ? '100%' : '0'; });
+  restartAuto();
+}
+
+/* ================= AUTOPLAY (every 4s) + SCROLL SYNC ================= */
+const AUTO_MS = 4000; let autoTween = null, progScroll = false, userScrubbing = false, lastUserInput = 0, lenis = null, heroST = null;
+function heroPos(i){ if (!heroST) return 0; return heroST.start + (heroST.end - heroST.start) * (i / (N - 1)); }
+function goTo(i, smooth){
+  const y = heroPos(i);
+  progScroll = true; clearTimeout(window.__ps);
+  window.__ps = setTimeout(() => progScroll = false, smooth ? 1350 : 120);
+  if (lenis) lenis.scrollTo(y, smooth ? {duration:1.2, easing:t=>1-Math.pow(1-t,3), lock:false} : {immediate:true, force:true});
+  else window.scrollTo({top:y, behavior: smooth ? 'smooth' : 'auto'});
+  setSlide(i);
+}
+function heroVisible(){ return heroST ? window.scrollY <= heroST.end + 2 : true; }
+function restartAuto(){
+  if (autoTween) autoTween.kill();
+  if (!G) return;
+  const bar = HERO[cur].btn.querySelector('i');
+  autoTween = gsap.fromTo(bar,{width:'0%'},{width:'100%', duration:AUTO_MS/1000, ease:'none', onComplete:() => {
+    if (!heroVisible() || document.hidden) { restartAuto(); return; }
+    const next = (cur + 1) % N;
+    if (next === 0) goTo(0, false);   // wrap invisibly: the hero is sticky, so the jump is seamless
+    else goTo(next, true);
+  }});
+}
+['wheel','touchmove','keydown'].forEach(ev => addEventListener(ev, () => { lastUserInput = performance.now(); userScrubbing = true; clearTimeout(window.__us); window.__us = setTimeout(() => { userScrubbing = false; const v = HERO[cur]?.video; if (v && heroVisible()) v.play().catch(()=>{}); }, 900); }, {passive:true}));
+
+/* ================= DUST PARTICLES ================= */
+const dc = $('#dust'), dx = dc.getContext('2d'); let DW, DH;
+const motes = Array.from({length: innerWidth < 700 ? 40 : 90}, () => ({x:Math.random(), y:Math.random(), r:Math.random()*1.8+.3, s:Math.random()*.0007+.0002, o:Math.random()*.6+.15, w:Math.random()*Math.PI*2}));
+function dsize(){ const d = Math.min(devicePixelRatio||1,2); DW = dc.clientWidth; DH = dc.clientHeight; dc.width = DW*d; dc.height = DH*d; dx.setTransform(d,0,0,d,0,0); }
+dsize(); addEventListener('resize', dsize);
+let scrollV = 0;
+(function dl(){
+  dx.clearRect(0,0,DW,DH);
+  const ac = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#fff';
+  dx.fillStyle = ac;
+  motes.forEach(m => { m.y -= m.s + Math.abs(scrollV)*.00004; m.w += .01; if (m.y < -.02) { m.y = 1.02; m.x = Math.random(); }
+    dx.globalAlpha = m.o * (.6 + .4*Math.sin(m.w)); dx.beginPath(); dx.arc(m.x*DW + Math.sin(m.w)*12, m.y*DH, m.r, 0, 7); dx.fill(); });
+  dx.globalAlpha = 1; requestAnimationFrame(dl);
+})();
+
+/* ================= RANGE GRID ================= */
+const grid = $('#grid');
+grid.innerHTML = RANGE.map(r => `
+  <article class="card ${r.sold?'sold':''}" data-c="${r.c}" style="--c:${r.col}">
+    <div class="hd"><span><span class="dot"></span>${{savoury:'Savoury',sweet:'Sweet & Chocolate',premium:'Premium'}[r.c]}</span><span>${r.wt}</span></div>
+    ${r.sold?'<span class="so">SOLD OUT</span>':''}
+    <div class="im"><img loading="lazy" src="${IMG(r.img,700)}" alt="Popking ${r.n} popcorn"></div>
+    <h4>${r.n}</h4>
+    <div class="ft"><span class="pr">₹${r.pr}<small>incl. taxes</small></span><button class="add" data-name="${r.n}" data-cur="ADD">${r.sold?'Notify me':'Add to bag'}</button></div>
+  </article>`).join('');
+function filterTo(f){
+  $$('#filters button').forEach(b => b.classList.toggle('on', b.dataset.f === f));
+  const show = $$('.card').filter(c => { const ok = f==='all' || c.dataset.c===f; c.classList.toggle('hide', !ok); return ok; });
+  if (G) { gsap.fromTo(show,{opacity:0,y:30},{opacity:1,y:0,duration:.8,stagger:.04,ease:'power3.out'}); ScrollTrigger.refresh(); }
+}
+$$('#filters button').forEach(b => b.addEventListener('click', () => filterTo(b.dataset.f)));
+$$('.cc').forEach(c => c.addEventListener('click', () => filterTo(c.dataset.f)));
+
+/* bag */
+let bag = 0, tt;
+function addBag(name){
+  const r = RANGE.find(x => x.n === name) || RANGE.find(x => x.n.startsWith(name)) || RANGE.find(x => name.startsWith(x.n.split(' ')[0]));
+  if (!r || r.sold) return;
+  bag++; $('#bagN').textContent = bag;
+  if (G) gsap.fromTo('.bag',{scale:1.12},{scale:1,duration:.6,ease:'elastic.out(1,.4)'});
+  $('#tImg').src = IMG(r.img,200); $('#tTxt').textContent = `${r.n} · ₹${r.pr}`;
+  $('#toast').classList.add('show'); clearTimeout(tt); tt = setTimeout(() => $('#toast').classList.remove('show'), 2600);
+}
+document.addEventListener('click', e => { const a = e.target.closest('.add'); if (a) addBag(a.dataset.name); });
+$('#hAdd').addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); addBag(HERO[cur].n); });
+
+/* ================= PAIRING ================= */
+$('#pl').innerHTML = PAIRS.map((p,i) => `<div class="pr-row" data-i="${i}" style="--c:${p.c}" data-cur="PAIR">
+  <span class="i">${String(i+1).padStart(2,'0')}</span><span class="g">${p.g}</span>
+  <span class="f"><b>${p.f}</b>${p.why}</span><span class="a">↗</span></div>`).join('');
+const peek = $('#peek'); peek.innerHTML = PAIRS.map(p => `<img src="${IMG(p.img,600)}" alt="" style="opacity:0">`).join('');
+const peekImgs = [...peek.querySelectorAll('img')];
+
+/* ================= CURSOR ================= */
+const cr = $('#cur'), ct = $('#curTxt'); let mx = innerWidth/2, my = innerHeight/2;
+addEventListener('pointermove', e => { mx = e.clientX; my = e.clientY; });
+if (G) {
+  const xs = gsap.quickTo(cr,'x',{duration:.25,ease:'power3'}), ys = gsap.quickTo(cr,'y',{duration:.25,ease:'power3'});
+  const xt = gsap.quickTo(ct,'x',{duration:.25,ease:'power3'}), yt = gsap.quickTo(ct,'y',{duration:.25,ease:'power3'});
+  const px = gsap.quickTo(peek,'x',{duration:.7,ease:'power3'}), py = gsap.quickTo(peek,'y',{duration:.7,ease:'power3'});
+  addEventListener('pointermove', () => { xs(mx); ys(my); xt(mx); yt(my); px(mx); py(my); });
+}
+document.addEventListener('pointerover', e => { const t = e.target.closest('[data-cur],a,button'); if (t) { cr.classList.add('hover'); ct.textContent = t.dataset.cur || ''; ct.style.opacity = t.dataset.cur ? 1 : 0; } });
+document.addEventListener('pointerout', e => { const t = e.target.closest('[data-cur],a,button'); if (t && !t.contains(e.relatedTarget)) { cr.classList.remove('hover'); ct.style.opacity = 0; } });
+$$('.pr-row').forEach(r => {
+  r.addEventListener('pointerenter', () => { const i = +r.dataset.i; peekImgs.forEach((im,k) => im.style.opacity = k===i?1:0); if (G) gsap.to(peek,{opacity:1,scale:1,duration:.5,ease:'power3.out'}); });
+  r.addEventListener('pointerleave', () => { if (G) gsap.to(peek,{opacity:0,scale:.6,duration:.4}); });
+});
+
+/* ================= START ================= */
+function boot(){
+  document.body.classList.remove('is-loading');
+  setSlide(0);
+  if (!G) { $('#loader').remove(); return; }
+  gsap.timeline()
+    .to('#ldWord span',{yPercent:-105,duration:.6,stagger:.03,ease:'power3.in'})
+    .to('#loader',{yPercent:-100,duration:1.1,ease:'expo.inOut'},'-=.2')
+    .from('nav',{y:-30,opacity:0,duration:1,ease:'expo.out'},'-=.5')
+    .from('.hero-top, .hero-bot',{y:30,opacity:0,duration:1.1,stagger:.1,ease:'expo.out'},'<.1')
+    .add(() => $('#loader').remove());
+}
+
+if (G) {
+  gsap.registerPlugin(ScrollTrigger);
+  if (typeof Lenis !== 'undefined') {
+    lenis = new Lenis({lerp:.085, smoothWheel:true});
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add(t => lenis.raf(t*1000)); gsap.ticker.lagSmoothing(0);
+    $$('a[href^="#"]').forEach(a => a.addEventListener('click', e => { const t = a.getAttribute('href'); if (a.id === 'hAdd') return; const el = t === '#top' ? 0 : $(t); if (el !== null) { e.preventDefault(); lenis.scrollTo(el, {duration:1.6}); } }));
+  }
+  /* hero height = 1 screen + 70vh per extra flavour */
+  $('#hero').style.height = `calc(100svh + ${(N-1)*70}vh)`;
+  heroST = ScrollTrigger.create({trigger:'#hero', start:'top top', end:'bottom bottom',
+    onUpdate:s => {
+      const f = s.progress * (N-1), i = Math.round(f);
+      if (!progScroll && i !== cur) setSlide(i);
+      // scroll-scrub: the active flavour moves with your scroll (video frames, or the photo)
+      const local = gsap.utils.clamp(-.5,.5,f - i);
+      const h = HERO[cur];
+      if (h && h.video && userScrubbing && h.video.duration) { h.video.pause(); h.video.currentTime = (local + .5) * h.video.duration; }
+      gsap.set(stage,{rotate: local*10, scale:1 + Math.abs(local)*.06});
+      gsap.set(giant,{xPercent: -local*8});
+    }});
+  ScrollTrigger.create({start:0,end:'max',onUpdate:s => { scrollV = s.getVelocity(); $('#nav').classList.toggle('solid', s.scroll() > innerHeight*.6 && s.scroll() > heroST.end - 10); }});
+  /* stage breathing */
+  gsap.to(stage,{y:-14,duration:3,yoyo:true,repeat:-1,ease:'sine.inOut'});
+  addEventListener('pointermove', e => { if (window.scrollY > heroST.end) return; const nx = e.clientX/innerWidth - .5, ny = e.clientY/innerHeight - .5;
+    gsap.to('.slide img, .slide video',{x:nx*24,y:ny*18,duration:1.2,ease:'power3.out',overwrite:'auto'}); gsap.to('#giant .nm',{x:-nx*40,duration:1.4,ease:'power3.out',overwrite:'auto'}); });
+
+  /* statement words */
+  const st = $('#stmt'), out = [];
+  st.childNodes.forEach(nd => { const em = nd.nodeName === 'EM'; nd.textContent.split(/(\s+)/).forEach(w => out.push(w.trim() ? `<span class="w">${em?'<em>'+w+'</em>':w}</span>` : w)); });
+  st.innerHTML = out.join('');
+  gsap.to('#stmt .w',{opacity:1,stagger:.08,ease:'none',scrollTrigger:{trigger:'#stmt',start:'top 80%',end:'bottom 45%',scrub:.5}});
+  $$('.fig b').forEach(b => { const o = {v:0}, n = +b.dataset.n; gsap.to(o,{v:n,duration:2,ease:'power3.out',scrollTrigger:{trigger:b,start:'top 90%'},onUpdate:()=>b.textContent = Math.round(o.v)}); });
+
+  /* reveals */
+  $$('.rv').forEach(el => gsap.to(el,{opacity:1,y:0,duration:1.2,ease:'expo.out',scrollTrigger:{trigger:el,start:'top 88%'}}));
+  $$('.cc img').forEach(im => gsap.fromTo(im,{yPercent:-6},{yPercent:6,ease:'none',scrollTrigger:{trigger:im.parentElement,scrub:true}}));
+  ScrollTrigger.batch('.card',{start:'top 92%',once:true,onEnter:b => gsap.fromTo(b,{opacity:0,y:50},{opacity:1,y:0,duration:1,stagger:.06,ease:'expo.out'})});
+  gsap.from('.pr-row',{opacity:0,y:30,stagger:.07,duration:1,ease:'expo.out',scrollTrigger:{trigger:'#pl',start:'top 85%'}});
+
+  /* craft pinned steps */
+  const steps = $$('.step'), cimgs = $$('#craftR img'), ticks = $$('#ticks b');
+  gsap.set(steps[0],{opacity:1});
+  const ctl = gsap.timeline({scrollTrigger:{trigger:'#craft',start:'top top',end:'bottom bottom',scrub:.6}});
+  steps.forEach((s,i) => {
+    ctl.to(ticks[i],{scaleX:1,duration:1,ease:'none'}, i);
+    if (i === 0) return;
+    ctl.to(steps[i-1],{opacity:0,y:-40,duration:.3}, i - .15)
+       .fromTo(s,{opacity:0,y:40},{opacity:1,y:0,duration:.3}, i - .05)
+       .to(cimgs[i],{clipPath:'inset(0% 0 0 0)',duration:.45,ease:'power2.inOut'}, i - .2)
+       .fromTo(cimgs[i],{scale:1.25},{scale:1,duration:.8,ease:'none'}, i - .2);
+  });
+
+  /* finale zoom */
+  gsap.fromTo('#finImg',{scale:1.25},{scale:1,ease:'none',scrollTrigger:{trigger:'#finale',start:'top bottom',end:'bottom bottom',scrub:true}});
+  gsap.from('#finale h2',{yPercent:30,opacity:0,duration:1.4,ease:'expo.out',scrollTrigger:{trigger:'#finale',start:'top 60%'}});
+  gsap.fromTo('.fword',{yPercent:40},{yPercent:0,ease:'none',scrollTrigger:{trigger:'footer',start:'top bottom',end:'bottom bottom',scrub:true}});
+
+  addEventListener('load', () => ScrollTrigger.refresh());
+}
+
+/* loader progress (waits on hero images) */
+(() => {
+  const imgs = HERO.map(h => h.el.querySelector('img')); let shown = 0, target = 0;
+  const upd = () => { target = imgs.filter(i => i.complete).length / imgs.length * 100; };
+  imgs.forEach(i => i.addEventListener('load', upd)); upd();
+  const start = performance.now();
+  (function tick(){
+    const t = performance.now() - start; const goal = Math.max(target, Math.min(90, t/30)); shown += (goal - shown) * .12;
+    if (t > 6000) shown = 100;
+    $('#ldPct').textContent = String(Math.round(shown)).padStart(3,'0');
+    $('#ldBar').style.transform = `scaleX(${shown/100})`;
+    if (shown > 99.4) { $('#ldPct').textContent = '100'; return setTimeout(boot, 200); }
+    requestAnimationFrame(tick);
+  })();
+  if (G) gsap.to('#ldWord span',{yPercent:0,duration:1,stagger:.05,ease:'expo.out'});
+  else $$('#ldWord span').forEach(s => s.style.transform = 'none');
+})();
+})();
+</script>
+</body>
+</html>
